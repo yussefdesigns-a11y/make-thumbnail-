@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#020617" />
+    <title>Thumbnail Architect | Professional Portfolio</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              display: ['Montserrat', 'sans-serif'],
+            },
+            colors: {
+              midnight: '#050505',
+              neon: {
+                brand: '#ccff00',
+                purple: '#a855f7',
+                cyan: '#06b6d4',
+              }
+            },
+            backgroundImage: {
+              'grid-pattern': "linear-gradient(to right, #ffffff05 1px, transparent 1px), linear-gradient(to bottom, #ffffff05 1px, transparent 1px)",
+            },
+            animation: {
+              'float': 'float 6s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+      body {
+        background-color: #050505;
+        color: #f8fafc;
+        overflow-x: hidden;
+      }
+      .bg-grid {
+        background-size: 50px 50px;
+        mask-image: linear-gradient(to bottom, transparent, black, transparent);
+        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
+      }
+      
+      /* Scroll Animations Classes */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* Staggered delays */
+      .delay-100 { transition-delay: 100ms; }
+      .delay-200 { transition-delay: 200ms; }
+      .delay-300 { transition-delay: 300ms; }
+
+      /* Loader */
+      .loader {
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top: 3px solid #000;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+
+    <!-- Import Map for Google GenAI -->
+    <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.25",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+  }
+}
+</script>
+</head>
+<body class="bg-midnight text-slate-200 font-sans selection:bg-neon-brand selection:text-black">
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-6 bg-transparent">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gray-800 overflow-hidden border border-white/10">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=100&h=100" alt="Avatar" class="w-full h-full object-cover" />
+                </div>
+                <span class="text-xl font-display font-bold text-white tracking-wide">Arman</span>
+            </div>
+
+            <!-- Desktop Nav -->
+            <div class="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
+                <a href="#portfolio" class="text-sm font-medium text-slate-400 hover:text-neon-brand transition-colors">Work</a>
+                <a href="#process" class="text-sm font-medium text-slate-400 hover:text-neon-brand transition-colors">Process</a>
+                <a href="#contact" class="text-sm font-medium text-slate-400 hover:text-neon-brand transition-colors">Contact</a>
+            </div>
+
+            <!-- CTA -->
+            <div class="hidden md:block">
+                <a href="#contact" class="px-6 py-2.5 bg-neon-brand text-black text-sm font-bold rounded-lg hover:bg-neon-brand/90 transition-colors shadow-[0_0_15px_rgba(204,255,0,0.3)]">
+                    Get in touch
+                </a>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-midnight border-b border-white/10 p-6 flex-col gap-4 shadow-2xl">
+            <a href="#portfolio" class="mobile-link text-lg font-medium text-slate-300 hover:text-neon-brand">Work</a>
+            <a href="#process" class="mobile-link text-lg font-medium text-slate-300 hover:text-neon-brand">Process</a>
+            <a href="#contact" class="mobile-link text-lg font-medium text-slate-300 hover:text-neon-brand">Contact</a>
+            <a href="#contact" class="mobile-link px-6 py-3 bg-neon-brand text-black font-bold rounded-lg mt-2 text-center">Get in touch</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <!-- Background Grid -->
+        <div class="absolute inset-0 z-0 bg-grid-pattern bg-[length:40px_40px] opacity-20 pointer-events-none">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-midnight/50 to-midnight"></div>
+        </div>
+        
+        <!-- Glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-neon-brand/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="container mx-auto px-6 z-10 flex flex-col items-center text-center relative">
+            
+            <!-- Social Proof -->
+            <div class="reveal flex items-center gap-4 mb-8 bg-white/5 border border-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                <div class="flex -space-x-3">
+                    <div class="w-8 h-8 rounded-full border-2 border-midnight bg-slate-700 overflow-hidden"><img src="https://i.pravatar.cc/100?img=11" class="w-full h-full object-cover"></div>
+                    <div class="w-8 h-8 rounded-full border-2 border-midnight bg-slate-700 overflow-hidden"><img src="https://i.pravatar.cc/100?img=12" class="w-full h-full object-cover"></div>
+                    <div class="w-8 h-8 rounded-full border-2 border-midnight bg-slate-700 overflow-hidden"><img src="https://i.pravatar.cc/100?img=13" class="w-full h-full object-cover"></div>
+                    <div class="w-8 h-8 rounded-full border-2 border-midnight bg-slate-700 overflow-hidden"><img src="https://i.pravatar.cc/100?img=14" class="w-full h-full object-cover"></div>
+                </div>
+                <span class="text-sm font-medium text-slate-300">
+                    Trusted by <span class="text-white font-bold">50+ creators</span> across all niches
+                </span>
+            </div>
+            
+            <!-- Headline -->
+            <h1 class="reveal delay-100 font-display text-5xl md:text-7xl lg:text-8xl font-black leading-[1.1] text-white tracking-tight max-w-5xl mb-8">
+                Thumbnails That Make Viewers Say <span class="text-neon-brand">'I Need to Watch This!'</span>
+            </h1>
+            
+            <!-- Subheadline -->
+            <p class="reveal delay-200 text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed mb-10 font-light">
+                Aspiring thumbnail designer and strategist helping creators and entrepreneurs stand out on YouTube with bold pricing and a 24–48 hour turnaround per thumbnail I deliver.
+            </p>
+
+            <!-- Buttons -->
+            <div class="reveal delay-300 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <a href="#portfolio" class="px-8 py-4 bg-neon-brand text-black font-bold text-lg rounded-lg hover:scale-105 transition-transform shadow-[0_0_20px_rgba(204,255,0,0.4)] text-center">
+                    See my work
+                </a>
+                <a href="#contact" class="px-8 py-4 bg-white text-black font-bold text-lg rounded-lg hover:bg-slate-200 transition-colors shadow-lg text-center">
+                    Contact me
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-24 relative bg-midnight border-t border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="mb-16 reveal">
+                <h2 class="text-4xl font-display font-bold text-white mb-2">Selected Works</h2>
+                <p class="text-slate-400">Curated high-performing assets from the archive.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="portfolio-grid">
+                <!-- Portfolio Item 1 -->
+                <div class="reveal group relative">
+                    <div class="relative bg-slate-900/50 border border-white/10 rounded-xl overflow-hidden shadow-xl transition-all duration-300 group-hover:border-neon-brand/50 group-hover:shadow-[0_0_30px_rgba(204,255,0,0.1)] group-hover:-translate-y-2">
+                        <div class="relative aspect-video overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80" alt="Project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span class="bg-white text-black px-6 py-2 rounded-lg font-bold">View Case Study</span>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-white font-bold text-lg leading-tight group-hover:text-neon-brand transition-colors">High Intensity Training</h3>
+                                <span class="text-xs font-semibold text-slate-500 border border-slate-700 px-2 py-1 rounded">Education</span>
+                            </div>
+                            <div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2 text-neon-brand"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="font-bold text-sm">16.2% CTR</span></div>
+                                <div class="flex items-center gap-2 text-slate-400"><i data-lucide="eye" class="w-4 h-4"></i><span class="font-bold text-sm">3.5M Views</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 2 -->
+                <div class="reveal delay-100 group relative">
+                    <div class="relative bg-slate-900/50 border border-white/10 rounded-xl overflow-hidden shadow-xl transition-all duration-300 group-hover:border-neon-brand/50 group-hover:shadow-[0_0_30px_rgba(204,255,0,0.1)] group-hover:-translate-y-2">
+                        <div class="relative aspect-video overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=800&q=80" alt="Project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span class="bg-white text-black px-6 py-2 rounded-lg font-bold">View Case Study</span>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-white font-bold text-lg leading-tight group-hover:text-neon-brand transition-colors">David Laid: Transformation</h3>
+                                <span class="text-xs font-semibold text-slate-500 border border-slate-700 px-2 py-1 rounded">Education</span>
+                            </div>
+                            <div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2 text-neon-brand"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="font-bold text-sm">14.8% CTR</span></div>
+                                <div class="flex items-center gap-2 text-slate-400"><i data-lucide="eye" class="w-4 h-4"></i><span class="font-bold text-sm">1.2M Views</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 3 -->
+                <div class="reveal delay-200 group relative">
+                    <div class="relative bg-slate-900/50 border border-white/10 rounded-xl overflow-hidden shadow-xl transition-all duration-300 group-hover:border-neon-brand/50 group-hover:shadow-[0_0_30px_rgba(204,255,0,0.1)] group-hover:-translate-y-2">
+                        <div class="relative aspect-video overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80" alt="Project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span class="bg-white text-black px-6 py-2 rounded-lg font-bold">View Case Study</span>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-white font-bold text-lg leading-tight group-hover:text-neon-brand transition-colors">The 4 Best AI Tools</h3>
+                                <span class="text-xs font-semibold text-slate-500 border border-slate-700 px-2 py-1 rounded">Education</span>
+                            </div>
+                            <div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2 text-neon-brand"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="font-bold text-sm">19.5% CTR</span></div>
+                                <div class="flex items-center gap-2 text-slate-400"><i data-lucide="eye" class="w-4 h-4"></i><span class="font-bold text-sm">850K Views</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 4 -->
+                <div class="reveal group relative">
+                    <div class="relative bg-slate-900/50 border border-white/10 rounded-xl overflow-hidden shadow-xl transition-all duration-300 group-hover:border-neon-brand/50 group-hover:shadow-[0_0_30px_rgba(204,255,0,0.1)] group-hover:-translate-y-2">
+                        <div class="relative aspect-video overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80" alt="Project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span class="bg-white text-black px-6 py-2 rounded-lg font-bold">View Case Study</span>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-white font-bold text-lg leading-tight group-hover:text-neon-brand transition-colors">Pranking a Millionaire</h3>
+                                <span class="text-xs font-semibold text-slate-500 border border-slate-700 px-2 py-1 rounded">Podcast</span>
+                            </div>
+                            <div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2 text-neon-brand"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="font-bold text-sm">12.4% CTR</span></div>
+                                <div class="flex items-center gap-2 text-slate-400"><i data-lucide="eye" class="w-4 h-4"></i><span class="font-bold text-sm">4.1M Views</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 5 -->
+                <div class="reveal delay-100 group relative">
+                    <div class="relative bg-slate-900/50 border border-white/10 rounded-xl overflow-hidden shadow-xl transition-all duration-300 group-hover:border-neon-brand/50 group-hover:shadow-[0_0_30px_rgba(204,255,0,0.1)] group-hover:-translate-y-2">
+                        <div class="relative aspect-video overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1642543492481-44e81e3914a7?auto=format&fit=crop&w=800&q=80" alt="Project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span class="bg-white text-black px-6 py-2 rounded-lg font-bold">View Case Study</span>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-white font-bold text-lg leading-tight group-hover:text-neon-brand transition-colors">The 2026 Financial Plan</h3>
+                                <span class="text-xs font-semibold text-slate-500 border border-slate-700 px-2 py-1 rounded">Finance</span>
+                            </div>
+                            <div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2 text-neon-brand"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="font-bold text-sm">15.6% CTR</span></div>
+                                <div class="flex items-center gap-2 text-slate-400"><i data-lucide="eye" class="w-4 h-4"></i><span class="font-bold text-sm">2.9M Views</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 6 -->
+                <div class="reveal delay-200 group relative">
+                    <div class="relative bg-slate-900/50 border border-white/10 rounded-xl overflow-hidden shadow-xl transition-all duration-300 group-hover:border-neon-brand/50 group-hover:shadow-[0_0_30px_rgba(204,255,0,0.1)] group-hover:-translate-y-2">
+                        <div class="relative aspect-video overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1600596542815-6ad4c42792b9?auto=format&fit=crop&w=800&q=80" alt="Project" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span class="bg-white text-black px-6 py-2 rounded-lg font-bold">View Case Study</span>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-white font-bold text-lg leading-tight group-hover:text-neon-brand transition-colors">I Bought a $1M House</h3>
+                                <span class="text-xs font-semibold text-slate-500 border border-slate-700 px-2 py-1 rounded">Finance</span>
+                            </div>
+                            <div class="flex gap-4 mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2 text-neon-brand"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="font-bold text-sm">13.9% CTR</span></div>
+                                <div class="flex items-center gap-2 text-slate-400"><i data-lucide="eye" class="w-4 h-4"></i><span class="font-bold text-sm">1.5M Views</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="process" class="py-24 bg-midnight relative overflow-hidden border-t border-white/5">
+        <!-- Decorative Lines -->
+        <div class="absolute inset-0 pointer-events-none opacity-5">
+            <div class="absolute top-1/4 left-0 w-full h-px bg-neon-brand"></div>
+            <div class="absolute top-2/3 left-0 w-full h-px bg-white"></div>
+            <div class="absolute left-1/4 top-0 h-full w-px bg-white"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-display font-black text-white mb-4">THE BLUEPRINT</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">
+                    A scientific approach to creative design. We don't guess; we engineer for clicks.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="reveal relative group">
+                    <div class="absolute inset-0 bg-neon-brand/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative h-full bg-slate-900/50 border border-white/10 p-8 rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-6 text-neon-brand group-hover:text-black group-hover:bg-neon-brand transition-colors">
+                            <i data-lucide="search" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                            <span class="text-slate-600 text-sm font-mono">01.</span> Strategy
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Analyzing competitor thumbnails and identifying viral hooks.</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="reveal delay-100 relative group">
+                    <div class="absolute inset-0 bg-neon-brand/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative h-full bg-slate-900/50 border border-white/10 p-8 rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-6 text-neon-brand group-hover:text-black group-hover:bg-neon-brand transition-colors">
+                            <i data-lucide="pen-tool" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                            <span class="text-slate-600 text-sm font-mono">02.</span> Design
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">High-fidelity 3D compositing, lighting, and text manipulation.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="reveal delay-200 relative group">
+                    <div class="absolute inset-0 bg-neon-brand/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative h-full bg-slate-900/50 border border-white/10 p-8 rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-6 text-neon-brand group-hover:text-black group-hover:bg-neon-brand transition-colors">
+                            <i data-lucide="trending-up" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                            <span class="text-slate-600 text-sm font-mono">03.</span> Optimization
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">A/B testing preparation and color contrast checks.</p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="reveal delay-300 relative group">
+                    <div class="absolute inset-0 bg-neon-brand/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative h-full bg-slate-900/50 border border-white/10 p-8 rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-6 text-neon-brand group-hover:text-black group-hover:bg-neon-brand transition-colors">
+                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+                            <span class="text-slate-600 text-sm font-mono">04.</span> Launch
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">Final delivery in multiple formats ready for upload.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Generator Section -->
+    <section class="py-24 bg-midnight border-t border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto bg-slate-900/50 border border-white/10 rounded-2xl p-8 md:p-12 relative overflow-hidden reveal">
+                
+                <!-- Background Glow -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-neon-brand/5 blur-[80px] rounded-full pointer-events-none"></div>
+
+                <div class="relative z-10 text-center mb-8">
+                    <div class="inline-flex items-center gap-2 bg-white/5 rounded-full px-4 py-1.5 mb-4 border border-white/10">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-neon-brand"></i>
+                        <span class="text-xs font-bold text-white tracking-wide uppercase">Powered by Gemini AI</span>
+                    </div>
+                    <h2 class="text-3xl font-display font-bold text-white mb-2">Free Concept Generator</h2>
+                    <p class="text-slate-400">Stuck on ideas? Let AI brainstorm the visual hook for your next video.</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 mb-8">
+                    <input
+                        type="text"
+                        id="video-title-input"
+                        placeholder="Enter your video title..."
+                        class="flex-1 bg-black border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-neon-brand transition-colors placeholder:text-slate-600"
+                    />
+                    <button
+                        id="generate-btn"
+                        class="bg-neon-brand hover:bg-neon-brand/90 text-black font-bold px-8 py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 min-w-[160px]"
+                    >
+                        <span id="btn-text">Generate</span>
+                        <div id="btn-loader" class="loader hidden"></div>
+                    </button>
+                </div>
+
+                <div id="result-container" class="hidden bg-black rounded-xl p-6 border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                        <h3 class="text-neon-brand font-mono text-sm font-bold uppercase">AI Suggested Concepts</h3>
+                        <i data-lucide="copy" class="w-4 h-4 text-slate-500 cursor-pointer hover:text-white"></i>
+                    </div>
+                    <div class="prose prose-invert max-w-none text-slate-300 text-sm leading-relaxed">
+                        <pre id="result-text" class="whitespace-pre-wrap font-sans"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 relative bg-black text-white border-t border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                
+                <div class="reveal">
+                    <h2 class="text-5xl font-display font-black mb-6">LET'S BUILD <br/> THE NEXT VIRAL HIT.</h2>
+                    <p class="text-slate-400 text-lg mb-8 max-w-md">
+                        Currently accepting new clients for Q4. Book a slot now to secure your channel's growth.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <a href="#" class="flex items-center gap-4 text-slate-300 hover:text-neon-brand transition-colors group">
+                            <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 group-hover:border-neon-brand/50 transition-colors">
+                                <i data-lucide="mail" class="w-5 h-5"></i>
+                            </div>
+                            <span>hello@thumbnailarchitect.com</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-4 text-slate-300 hover:text-neon-brand transition-colors group">
+                            <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 group-hover:border-neon-brand/50 transition-colors">
+                                <i data-lucide="twitter" class="w-5 h-5"></i>
+                            </div>
+                            <span>@thumbnailarchitect</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-4 text-slate-300 hover:text-neon-brand transition-colors group">
+                            <div class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 group-hover:border-neon-brand/50 transition-colors">
+                                <i data-lucide="linkedin" class="w-5 h-5"></i>
+                            </div>
+                            <span>/in/thumbnailarchitect</span>
+                        </a>
+                    </div>
+                </div>
+
+                <form class="reveal delay-100 bg-slate-900/50 p-8 rounded-2xl border border-white/10">
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Name</label>
+                            <input type="text" class="w-full bg-black border border-white/10 rounded-lg p-3 text-white focus:border-neon-brand outline-none transition-colors" />
+                        </div>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Email</label>
+                            <input type="email" class="w-full bg-black border border-white/10 rounded-lg p-3 text-white focus:border-neon-brand outline-none transition-colors" />
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Channel Link</label>
+                        <input type="text" class="w-full bg-black border border-white/10 rounded-lg p-3 text-white focus:border-neon-brand outline-none transition-colors" />
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Project Details</label>
+                        <textarea rows="4" class="w-full bg-black border border-white/10 rounded-lg p-3 text-white focus:border-neon-brand outline-none transition-colors"></textarea>
+                    </div>
+
+                    <button type="button" class="w-full bg-white text-black font-bold py-4 rounded-lg hover:bg-slate-200 transition-colors">
+                        Send Request
+                    </button>
+                </form>
+            </div>
+            
+            <div class="mt-24 pt-8 border-t border-white/5 text-center text-slate-600 text-sm">
+                © 2024 The Thumbnail Architect. All rights reserved.
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Logic Script -->
+    <script type="module">
+        import { GoogleGenAI } from "@google/genai";
+
+        // --- Initialize Icons ---
+        lucide.createIcons();
+
+        // --- Navbar Scroll Effect ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('bg-midnight/90', 'backdrop-blur-md', 'border-b', 'border-white/5', 'py-4');
+                navbar.classList.remove('py-6', 'bg-transparent');
+            } else {
+                navbar.classList.remove('bg-midnight/90', 'backdrop-blur-md', 'border-b', 'border-white/5', 'py-4');
+                navbar.classList.add('py-6', 'bg-transparent');
+            }
+        });
+
+        // --- Mobile Menu ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+           mobileMenu.classList.toggle('hidden');
+           mobileMenu.classList.toggle('flex');
+           const icon = mobileMenu.classList.contains('flex') ? 'x' : 'menu';
+           // Re-render icon
+           mobileMenuBtn.innerHTML = `<i data-lucide="${icon}"></i>`;
+           lucide.createIcons();
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+                mobileMenuBtn.innerHTML = `<i data-lucide="menu"></i>`;
+                lucide.createIcons();
+            });
+        });
+
+        // --- Scroll Animations (Simple IntersectionObserver) ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- AI Concept Generator ---
+        const generateBtn = document.getElementById('generate-btn');
+        const videoInput = document.getElementById('video-title-input');
+        const resultContainer = document.getElementById('result-container');
+        const resultText = document.getElementById('result-text');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+
+        generateBtn.addEventListener('click', async () => {
+            const title = videoInput.value.trim();
+            if (!title) return;
+
+            // UI Loading State
+            generateBtn.disabled = true;
+            btnText.textContent = '';
+            btnLoader.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+
+            try {
+                const apiKey = process.env.API_KEY; 
+                // Note: In a real static HTML context without a bundler, process.env isn't defined.
+                // However, per instructions, we assume this code runs in an environment where it's injected 
+                // or we are following the prompt's requirement to use process.env.API_KEY explicitly.
+                
+                if (!apiKey) {
+                    throw new Error("API Key not found in environment.");
+                }
+
+                const ai = new GoogleGenAI({ apiKey: apiKey });
+                
+                const prompt = `
+                    You are a YouTube viral expert. 
+                    For the video title: "${title}", provide 3 distinct, high-CTR thumbnail concepts.
+                    Format the output as a simple Markdown list. 
+                    For each concept, provide:
+                    1. Visual Description (Short)
+                    2. Text Overlay (Short, Punchy)
+                `;
+
+                const response = await ai.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: prompt,
+                });
+
+                resultText.textContent = response.text;
+                resultContainer.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Error:", error);
+                resultText.textContent = "Error: Could not generate concepts. " + (error.message || "Please check console.");
+                resultContainer.classList.remove('hidden');
+            } finally {
+                generateBtn.disabled = false;
+                btnText.textContent = 'Generate';
+                btnLoader.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
